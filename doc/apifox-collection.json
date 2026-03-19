@@ -1,0 +1,3407 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "FaceIt API",
+    "description": "FaceIt AI 模拟面试平台 API 接口文档",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1",
+      "description": "开发环境"
+    },
+    {
+      "url": "https://api.faceit.com/api/v1",
+      "description": "生产环境"
+    }
+  ],
+  "tags": [
+    {
+      "name": "认证",
+      "description": "用户认证相关接口"
+    },
+    {
+      "name": "用户",
+      "description": "用户管理相关接口"
+    },
+    {
+      "name": "面试",
+      "description": "面试会话相关接口"
+    },
+    {
+      "name": "评估",
+      "description": "评估报告相关接口"
+    },
+    {
+      "name": "知识库",
+      "description": "知识库管理相关接口"
+    },
+    {
+      "name": "统计",
+      "description": "统计分析相关接口"
+    },
+    {
+      "name": "AI",
+      "description": "AI 服务相关接口"
+    },
+    {
+      "name": "音频",
+      "description": "音频处理相关接口"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "用户注册",
+        "description": "注册新用户账号",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "username": "testuser",
+                "password": "Test123456",
+                "email": "test@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "注册成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "注册成功",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                },
+                "example": {
+                  "code": 400,
+                  "message": "用户名已存在",
+                  "data": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "用户登录",
+        "description": "用户登录获取 Token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "username": "testuser",
+                "password": "Test123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "登录成功",
+                  "data": {
+                    "userId": 1,
+                    "username": "testuser",
+                    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "expiresIn": 7200
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                },
+                "example": {
+                  "code": 401,
+                  "message": "用户名或密码错误",
+                  "data": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "用户登出",
+        "description": "用户登出，使 Token 失效",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "登出成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/profile": {
+      "get": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "获取用户信息",
+        "description": "获取当前登录用户的详细信息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "id": 1,
+                    "username": "testuser",
+                    "email": "test@example.com",
+                    "realName": "张三",
+                    "school": "清华大学",
+                    "major": "计算机科学与技术",
+                    "grade": "大四",
+                    "targetPosition": "java_backend",
+                    "jobStatus": "preparing",
+                    "avatarUrl": "https://example.com/avatar.jpg",
+                    "createdAt": "2026-03-01T10:00:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "更新用户信息",
+        "description": "更新当前登录用户的个人信息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              },
+              "example": {
+                "realName": "张三",
+                "school": "清华大学",
+                "major": "计算机科学与技术",
+                "grade": "大四",
+                "targetPosition": "java_backend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/password": {
+      "put": {
+        "tags": [
+          "用户"
+        ],
+        "summary": "修改密码",
+        "description": "修改当前登录用户的密码",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordRequest"
+              },
+              "example": {
+                "oldPassword": "OldPassword123",
+                "newPassword": "NewPassword456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "修改成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/create": {
+      "post": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "创建面试会话",
+        "description": "创建一个新的面试会话",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInterviewRequest"
+              },
+              "example": {
+                "jobPosition": "java_backend",
+                "interviewMode": "full",
+                "durationMinutes": 30
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewSessionResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "id": 1,
+                    "userId": 1,
+                    "jobPosition": "java_backend",
+                    "interviewMode": "full",
+                    "durationMinutes": 30,
+                    "status": "pending",
+                    "createdAt": "2026-03-01T10:00:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/{id}/start": {
+      "post": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "开始面试",
+        "description": "开始指定的面试会话",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "开始成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/{id}/end": {
+      "post": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "结束面试",
+        "description": "结束指定的面试会话",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "结束成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/{id}": {
+      "get": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "获取面试详情",
+        "description": "获取指定面试会话的详细信息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewSessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/{id}/message": {
+      "post": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "发送消息",
+        "description": "在面试会话中发送消息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageRequest"
+              },
+              "example": {
+                "messageType": "text",
+                "content": "你好，我是来面试 Java 后端开发岗位的。"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "发送成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/{id}/messages": {
+      "get": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "获取对话历史",
+        "description": "获取指定面试会话的对话历史",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interview/history": {
+      "get": {
+        "tags": [
+          "面试"
+        ],
+        "summary": "获取面试历史",
+        "description": "获取当前用户的面试历史记录",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/generate": {
+      "post": {
+        "tags": [
+          "评估"
+        ],
+        "summary": "生成评估报告",
+        "description": "为指定的面试会话生成评估报告",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateEvaluationRequest"
+              },
+              "example": {
+                "sessionId": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/{id}": {
+      "get": {
+        "tags": [
+          "评估"
+        ],
+        "summary": "获取评估报告",
+        "description": "获取指定评估报告的详细信息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationReportResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "id": 1,
+                    "sessionId": 1,
+                    "userId": 1,
+                    "overallScore": 85.5,
+                    "grade": "A",
+                    "technicalAccuracy": 88.0,
+                    "logicalRigor": 82.0,
+                    "jobMatching": 90.0,
+                    "expressionAbility": 85.0,
+                    "confidence": 80.0,
+                    "strengths": [
+                      "技术基础扎实",
+                      "表达清晰"
+                    ],
+                    "weaknesses": [
+                      "分布式系统理解不足"
+                    ],
+                    "summary": "整体表现优秀，技术基础扎实...",
+                    "suggestions": [
+                      "深入学习 Redis 集群",
+                      "准备更多项目案例"
+                    ],
+                    "radarChartData": {
+                      "dimensions": [
+                        "技术正确性",
+                        "逻辑严谨性",
+                        "岗位匹配度",
+                        "表达能力",
+                        "自信度"
+                      ],
+                      "values": [
+                        88,
+                        82,
+                        90,
+                        85,
+                        80
+                      ]
+                    },
+                    "createdAt": "2026-03-01T11:00:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/{id}/questions": {
+      "get": {
+        "tags": [
+          "评估"
+        ],
+        "summary": "获取逐题评价",
+        "description": "获取指定评估报告的逐题评价列表",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionEvaluationListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/history": {
+      "get": {
+        "tags": [
+          "评估"
+        ],
+        "summary": "获取评估历史",
+        "description": "获取当前用户的评估报告历史",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge/search": {
+      "post": {
+        "tags": [
+          "知识库"
+        ],
+        "summary": "检索知识库",
+        "description": "根据查询内容检索知识库",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeSearchRequest"
+              },
+              "example": {
+                "query": "Spring Boot 自动装配原理",
+                "jobPosition": "java_backend",
+                "topK": 5
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "检索成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeSearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge/list": {
+      "get": {
+        "tags": [
+          "知识库"
+        ],
+        "summary": "获取知识库列表",
+        "description": "获取知识库文档列表",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge/{id}": {
+      "get": {
+        "tags": [
+          "知识库"
+        ],
+        "summary": "获取知识库文档详情",
+        "description": "获取指定知识库文档的详细信息",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeDocumentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge/upload": {
+      "post": {
+        "tags": [
+          "知识库"
+        ],
+        "summary": "上传知识文档",
+        "description": "上传新的知识库文档",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "上传成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/growth-curve": {
+      "get": {
+        "tags": [
+          "统计"
+        ],
+        "summary": "获取成长曲线",
+        "description": "获取用户能力成长曲线数据",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthCurveResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "labels": [
+                      "2026-03-01",
+                      "2026-03-05",
+                      "2026-03-10"
+                    ],
+                    "overallScores": [
+                      75.0,
+                      80.0,
+                      85.5
+                    ],
+                    "technicalAccuracy": [
+                      70.0,
+                      78.0,
+                      88.0
+                    ],
+                    "logicalRigor": [
+                      72.0,
+                      80.0,
+                      82.0
+                    ],
+                    "jobMatching": [
+                      80.0,
+                      82.0,
+                      90.0
+                    ],
+                    "expressionAbility": [
+                      75.0,
+                      78.0,
+                      85.0
+                    ],
+                    "confidence": [
+                      70.0,
+                      75.0,
+                      80.0
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/radar-chart": {
+      "get": {
+        "tags": [
+          "统计"
+        ],
+        "summary": "获取雷达图数据",
+        "description": "获取用户能力雷达图数据",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadarChartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/weak-points": {
+      "get": {
+        "tags": [
+          "统计"
+        ],
+        "summary": "获取薄弱环节",
+        "description": "获取用户薄弱环节分析",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeakPointsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/recommendations": {
+      "get": {
+        "tags": [
+          "统计"
+        ],
+        "summary": "获取推荐练习",
+        "description": "获取系统为用户推荐的练习内容",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/recommendations/{id}": {
+      "put": {
+        "tags": [
+          "统计"
+        ],
+        "summary": "更新推荐状态",
+        "description": "更新推荐练习的完成状态",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRecommendationStatusRequest"
+              },
+              "example": {
+                "status": "completed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/chat": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI 对话",
+        "description": "与 AI 面试官进行对话（流式响应）",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiChatRequest"
+              },
+              "example": {
+                "sessionId": 1,
+                "message": "你好，我是来面试 Java 后端开发岗位的。",
+                "messageType": "text"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "对话成功（SSE 流式响应）",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "example": "data: {\"content\":\"你好\"}\n\ndata: {\"content\":\"，欢迎\"}\n\ndata: {\"content\":\"参加面试\"}\n\n"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/evaluate": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI 评估",
+        "description": "调用 AI 进行面试评估",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiEvaluateRequest"
+              },
+              "example": {
+                "sessionId": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "评估成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiEvaluateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/audio/asr": {
+      "post": {
+        "tags": [
+          "音频"
+        ],
+        "summary": "语音识别",
+        "description": "将音频文件转换为文字",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AudioAsrRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "识别成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioAsrResponse"
+                },
+                "example": {
+                  "code": 200,
+                  "message": "success",
+                  "data": {
+                    "text": "你好，我是来面试 Java 后端开发岗位的。",
+                    "duration": 3.5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/audio/tts": {
+      "post": {
+        "tags": [
+          "音频"
+        ],
+        "summary": "语音合成",
+        "description": "将文字转换为音频",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AudioTtsRequest"
+              },
+              "example": {
+                "text": "你好，欢迎参加面试。",
+                "voiceType": "male"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "合成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioTtsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/positions": {
+      "get": {
+        "tags": [
+          "岗位配置"
+        ],
+        "summary": "获取岗位列表",
+        "description": "获取所有支持的面试岗位列表",
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/positions/{code}/config": {
+      "get": {
+        "tags": [
+          "岗位配置"
+        ],
+        "summary": "获取岗位配置",
+        "description": "获取指定岗位的详细配置信息",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "岗位代码"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/practice/plans": {
+      "get": {
+        "tags": [
+          "练习计划"
+        ],
+        "summary": "获取练习计划",
+        "description": "获取用户的个性化练习计划列表",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "岗位筛选"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "completed",
+                "cancelled"
+              ]
+            },
+            "description": "状态筛选"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticePlansResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "练习计划"
+        ],
+        "summary": "生成练习计划",
+        "description": "为用户生成个性化练习计划",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePracticePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "生成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneratePracticePlanResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/practice/plans/{id}/progress": {
+      "put": {
+        "tags": [
+          "练习计划"
+        ],
+        "summary": "更新练习计划进度",
+        "description": "更新练习计划的完成进度",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "计划ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProgressRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProgressResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/practice/mistakes": {
+      "get": {
+        "tags": [
+          "错题本"
+        ],
+        "summary": "获取错题列表",
+        "description": "获取用户的错题记录列表",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobPosition",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "岗位筛选"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "页码"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "description": "每页数量"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistakesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/practice/mistakes/{id}/review": {
+      "post": {
+        "tags": [
+          "错题本"
+        ],
+        "summary": "标记错题已复习",
+        "description": "标记错题为已复习状态",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "错题ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistakeReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "标记成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistakeReviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/practice/mistakes/{id}": {
+      "delete": {
+        "tags": [
+          "错题本"
+        ],
+        "summary": "删除错题",
+        "description": "删除指定的错题记录",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "错题ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/help/articles": {
+      "get": {
+        "tags": [
+          "帮助中心"
+        ],
+        "summary": "获取帮助文章列表",
+        "description": "获取帮助中心的文章列表",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "tutorial",
+                "tips",
+                "faq"
+              ]
+            },
+            "description": "分类筛选"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "页码"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "description": "每页数量"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpArticlesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/help/articles/{id}": {
+      "get": {
+        "tags": [
+          "帮助中心"
+        ],
+        "summary": "获取帮助文章详情",
+        "description": "获取指定帮助文章的详细内容",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "文章ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpArticleDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/help/faq": {
+      "get": {
+        "tags": [
+          "帮助中心"
+        ],
+        "summary": "获取FAQ列表",
+        "description": "获取常见问题解答列表",
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaqResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Result": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "accessToken": {
+                "type": "string"
+              },
+              "expiresIn": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "UserProfileResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "realName": {
+                "type": "string"
+              },
+              "school": {
+                "type": "string"
+              },
+              "major": {
+                "type": "string"
+              },
+              "grade": {
+                "type": "string"
+              },
+              "targetPosition": {
+                "type": "string"
+              },
+              "jobStatus": {
+                "type": "string"
+              },
+              "avatarUrl": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "realName": {
+            "type": "string"
+          },
+          "school": {
+            "type": "string"
+          },
+          "major": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "string"
+          },
+          "targetPosition": {
+            "type": "string"
+          },
+          "jobStatus": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePasswordRequest": {
+        "type": "object",
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "oldPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateInterviewRequest": {
+        "type": "object",
+        "required": [
+          "jobPosition",
+          "interviewMode",
+          "durationMinutes"
+        ],
+        "properties": {
+          "jobPosition": {
+            "type": "string",
+            "enum": [
+              "java_backend",
+              "web_frontend"
+            ]
+          },
+          "interviewMode": {
+            "type": "string",
+            "enum": [
+              "basic",
+              "full",
+              "special"
+            ]
+          },
+          "durationMinutes": {
+            "type": "integer",
+            "enum": [
+              10,
+              20,
+              30
+            ]
+          }
+        }
+      },
+      "InterviewSessionResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "userId": {
+                "type": "integer"
+              },
+              "jobPosition": {
+                "type": "string"
+              },
+              "interviewMode": {
+                "type": "string"
+              },
+              "durationMinutes": {
+                "type": "integer"
+              },
+              "status": {
+                "type": "string"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "actualDuration": {
+                "type": "integer"
+              },
+              "totalQuestions": {
+                "type": "integer"
+              },
+              "totalAnswers": {
+                "type": "integer"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "SendMessageRequest": {
+        "type": "object",
+        "required": [
+          "messageType",
+          "content"
+        ],
+        "properties": {
+          "messageType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "audioDuration": {
+            "type": "number"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "integer"
+              },
+              "role": {
+                "type": "string"
+              },
+              "messageType": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "stage": {
+                "type": "string"
+              },
+              "sequence": {
+                "type": "integer"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "MessageListResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "sessionId": {
+                      "type": "integer"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "messageType": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "stage": {
+                      "type": "string"
+                    },
+                    "sequence": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "InterviewHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/InterviewSessionResponse/properties/data"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GenerateEvaluationRequest": {
+        "type": "object",
+        "required": [
+          "sessionId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "integer"
+          }
+        }
+      },
+      "EvaluationReportResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "integer"
+              },
+              "userId": {
+                "type": "integer"
+              },
+              "overallScore": {
+                "type": "number"
+              },
+              "grade": {
+                "type": "string"
+              },
+              "technicalAccuracy": {
+                "type": "number"
+              },
+              "logicalRigor": {
+                "type": "number"
+              },
+              "jobMatching": {
+                "type": "number"
+              },
+              "expressionAbility": {
+                "type": "number"
+              },
+              "confidence": {
+                "type": "number"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "weaknesses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "summary": {
+                "type": "string"
+              },
+              "suggestions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "radarChartData": {
+                "type": "object",
+                "properties": {
+                  "dimensions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "QuestionEvaluationListResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "reportId": {
+                  "type": "integer"
+                },
+                "questionContent": {
+                  "type": "string"
+                },
+                "answerContent": {
+                  "type": "string"
+                },
+                "score": {
+                  "type": "number"
+                },
+                "correctness": {
+                  "type": "string"
+                },
+                "highlights": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "issues": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "improvement": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "EvaluationHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EvaluationReportResponse/properties/data"
+                }
+              }
+            }
+          }
+        }
+      },
+      "KnowledgeSearchRequest": {
+        "type": "object",
+        "required": [
+          "query",
+          "jobPosition"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "jobPosition": {
+            "type": "string"
+          },
+          "topK": {
+            "type": "integer",
+            "default": 5
+          }
+        }
+      },
+      "KnowledgeSearchResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "chunkId": {
+                      "type": "integer"
+                    },
+                    "documentId": {
+                      "type": "integer"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "score": {
+                      "type": "number"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KnowledgeListResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "jobPosition": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "string"
+                    },
+                    "difficulty": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KnowledgeDocumentResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "jobPosition": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "string"
+              },
+              "difficulty": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "KnowledgeUploadRequest": {
+        "type": "object",
+        "required": [
+          "file",
+          "jobPosition",
+          "category"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          },
+          "jobPosition": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string"
+          }
+        }
+      },
+      "GrowthCurveResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "overallScores": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "technicalAccuracy": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "logicalRigor": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "jobMatching": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "expressionAbility": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "confidence": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RadarChartResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "current": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "average": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WeakPointsResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "weakPoints": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "dimension": {
+                      "type": "string"
+                    },
+                    "score": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "RecommendationsResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "recommendationType": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "resourceUrl": {
+                  "type": "string"
+                },
+                "priority": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateRecommendationStatusRequest": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed",
+              "ignored"
+            ]
+          }
+        }
+      },
+      "AiChatRequest": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "message"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "messageType": {
+            "type": "string",
+            "default": "text"
+          }
+        }
+      },
+      "AiEvaluateRequest": {
+        "type": "object",
+        "required": [
+          "sessionId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "integer"
+          }
+        }
+      },
+      "AiEvaluateResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EvaluationReportResponse/properties/data"
+          }
+        }
+      },
+      "AudioAsrRequest": {
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "AudioAsrResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "AudioTtsRequest": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "voiceType": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "default": "male"
+          }
+        }
+      },
+      "AudioTtsResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "audioUrl": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "PositionsResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PositionConfigResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "techStack": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "level": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "examPoints": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "weight": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "interviewModes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PracticePlansResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "userId": {
+                  "type": "integer"
+                },
+                "jobPosition": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "planData": {
+                  "type": "object"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "progress": {
+                  "type": "integer"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GeneratePracticePlanRequest": {
+        "type": "object",
+        "required": [
+          "jobPosition"
+        ],
+        "properties": {
+          "jobPosition": {
+            "type": "string"
+          },
+          "reportId": {
+            "type": "integer"
+          },
+          "duration": {
+            "type": "integer",
+            "default": 7
+          }
+        }
+      },
+      "GeneratePracticePlanResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "totalTasks": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "UpdateProgressRequest": {
+        "type": "object",
+        "required": [
+          "day",
+          "completed"
+        ],
+        "properties": {
+          "day": {
+            "type": "integer"
+          },
+          "completed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateProgressResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "progress": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "MistakesResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "userId": {
+                      "type": "integer"
+                    },
+                    "jobPosition": {
+                      "type": "string"
+                    },
+                    "questionContent": {
+                      "type": "string"
+                    },
+                    "correctAnswer": {
+                      "type": "string"
+                    },
+                    "userAnswer": {
+                      "type": "string"
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "sourceReportId": {
+                      "type": "integer"
+                    },
+                    "reviewCount": {
+                      "type": "integer"
+                    },
+                    "lastReviewAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MistakeReviewRequest": {
+        "type": "object",
+        "required": [
+          "understood"
+        ],
+        "properties": {
+          "understood": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "MistakeReviewResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "reviewCount": {
+                "type": "integer"
+              },
+              "lastReviewAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "HelpArticlesResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "sortOrder": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HelpArticleDetailResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "category": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "sortOrder": {
+                "type": "integer"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "FaqResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "question": {
+                  "type": "string"
+                },
+                "answer": {
+                  "type": "string"
+                },
+                "sortOrder": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
