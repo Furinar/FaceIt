@@ -1,0 +1,881 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FaceIt API",
+    "description": "AI模拟面试与能力提升平台接口文档",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1",
+      "description": "开发环境"
+    }
+  ],
+  "tags": [
+    {"name": "认证", "description": "用户认证相关接口"},
+    {"name": "岗位", "description": "岗位管理接口"},
+    {"name": "面试", "description": "面试相关接口"},
+    {"name": "用户", "description": "用户相关接口"},
+    {"name": "题库管理", "description": "管理员题库管理接口"},
+    {"name": "语音", "description": "语音相关接口"}
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["认证"],
+        "summary": "用户登录",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["认证"],
+        "summary": "用户注册",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "注册成功"
+          }
+        }
+      }
+    },
+    "/positions": {
+      "get": {
+        "tags": ["岗位"],
+        "summary": "获取岗位列表",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/positions/{id}": {
+      "get": {
+        "tags": ["岗位"],
+        "summary": "获取岗位详情",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer", "format": "int64"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interviews/sessions": {
+      "post": {
+        "tags": ["面试"],
+        "summary": "创建面试会话",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interviews/sessions/{sessionId}/current": {
+      "get": {
+        "tags": ["面试"],
+        "summary": "获取当前题目",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentQuestionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interviews/sessions/{sessionId}/answer": {
+      "post": {
+        "tags": ["面试"],
+        "summary": "提交回答",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitAnswerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerFeedbackResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interviews/sessions/{sessionId}/finish": {
+      "post": {
+        "tags": ["面试"],
+        "summary": "结束面试",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinishSessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/interviews/sessions/{sessionId}/report": {
+      "get": {
+        "tags": ["面试"],
+        "summary": "获取面试报告",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me/interviews": {
+      "get": {
+        "tags": ["用户"],
+        "summary": "获取面试历史",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "positionId",
+            "in": "query",
+            "schema": {"type": "integer", "format": "int64"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me/profile": {
+      "get": {
+        "tags": ["用户"],
+        "summary": "获取能力档案",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "integer", "format": "int64"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me/growth": {
+      "get": {
+        "tags": ["用户"],
+        "summary": "获取成长曲线",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "positionId",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "integer", "format": "int64"}
+          },
+          {
+            "name": "dimension",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["total", "tech", "depth", "logic", "match"]}
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {"type": "integer", "default": 30}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthCurveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/questions": {
+      "get": {
+        "tags": ["题库管理"],
+        "summary": "获取题目列表",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "positionId",
+            "in": "query",
+            "schema": {"type": "integer", "format": "int64"}
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "schema": {"type": "integer"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功"
+          }
+        }
+      },
+      "post": {
+        "tags": ["题库管理"],
+        "summary": "创建题目",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功"
+          }
+        }
+      }
+    },
+    "/admin/questions/{id}": {
+      "put": {
+        "tags": ["题库管理"],
+        "summary": "更新题目",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer", "format": "int64"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["题库管理"],
+        "summary": "删除题目",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer", "format": "int64"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功"
+          }
+        }
+      }
+    },
+    "/voice/upload": {
+      "post": {
+        "tags": ["语音"],
+        "summary": "上传语音文件",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "sessionId": {"type": "string"}
+                },
+                "required": ["file", "sessionId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceUploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/voice/recognize": {
+      "post": {
+        "tags": ["语音"],
+        "summary": "语音识别",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoiceRecognizeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceRecognizeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {"type": "integer"},
+          "message": {"type": "string"},
+          "data": {"type": "object"},
+          "timestamp": {"type": "integer", "format": "int64"}
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {"type": "string"},
+          "password": {"type": "string"}
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {"type": "string"},
+          "userId": {"type": "string"},
+          "username": {"type": "string"},
+          "role": {"type": "string"}
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["username", "password", "confirmPassword"],
+        "properties": {
+          "username": {"type": "string"},
+          "password": {"type": "string"},
+          "confirmPassword": {"type": "string"}
+        }
+      },
+      "Position": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer", "format": "int64"},
+          "name": {"type": "string"},
+          "code": {"type": "string"},
+          "description": {"type": "string"},
+          "skillTree": {"type": "object"},
+          "evalWeights": {"type": "object"}
+        }
+      },
+      "PositionListResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/Position"}
+              }
+            }
+          }
+        ]
+      },
+      "PositionResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {"$ref": "#/components/schemas/Position"}
+            }
+          }
+        ]
+      },
+      "CreateSessionRequest": {
+        "type": "object",
+        "required": ["positionId", "mode"],
+        "properties": {
+          "positionId": {"type": "integer", "format": "int64"},
+          "mode": {"type": "string", "enum": ["free", "simulate", "focus"]},
+          "difficulty": {"type": "integer", "default": 2}
+        }
+      },
+      "SessionResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "sessionId": {"type": "string"},
+                  "positionId": {"type": "integer", "format": "int64"},
+                  "positionName": {"type": "string"},
+                  "mode": {"type": "string"},
+                  "difficulty": {"type": "integer"},
+                  "status": {"type": "string"},
+                  "totalQuestions": {"type": "integer"},
+                  "currentQaSeq": {"type": "integer"},
+                  "startTime": {"type": "string", "format": "date-time"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CurrentQuestionResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "qaSeq": {"type": "integer"},
+                  "totalQuestions": {"type": "integer"},
+                  "question": {
+                    "type": "object",
+                    "properties": {
+                      "id": {"type": "integer", "format": "int64"},
+                      "category": {"type": "string"},
+                      "title": {"type": "string"},
+                      "content": {"type": "string"},
+                      "durationSeconds": {"type": "integer"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SubmitAnswerRequest": {
+        "type": "object",
+        "required": ["qaSeq", "answerType", "answerContent"],
+        "properties": {
+          "qaSeq": {"type": "integer"},
+          "answerType": {"type": "string", "enum": ["text", "voice"]},
+          "answerContent": {"type": "string"},
+          "voiceUrl": {"type": "string"},
+          "voiceDuration": {"type": "integer"}
+        }
+      },
+      "AnswerFeedbackResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "qaSeq": {"type": "integer"},
+                  "score": {"type": "number"},
+                  "techScore": {"type": "number"},
+                  "depthScore": {"type": "number"},
+                  "logicScore": {"type": "number"},
+                  "matchScore": {"type": "number"},
+                  "feedback": {"type": "string"},
+                  "analysis": {"type": "object"},
+                  "hasFollowUp": {"type": "boolean"},
+                  "followUpQuestion": {"type": "object"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FinishSessionResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "sessionId": {"type": "string"},
+                  "status": {"type": "string"},
+                  "totalScore": {"type": "number"},
+                  "techScore": {"type": "number"},
+                  "depthScore": {"type": "number"},
+                  "logicScore": {"type": "number"},
+                  "matchScore": {"type": "number"},
+                  "durationSeconds": {"type": "integer"},
+                  "reportId": {"type": "string"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ReportResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "reportId": {"type": "string"},
+                  "sessionId": {"type": "string"},
+                  "positionName": {"type": "string"},
+                  "totalScore": {"type": "number"},
+                  "scores": {"type": "object"},
+                  "strengths": {"type": "array", "items": {"type": "string"}},
+                  "weaknesses": {"type": "array", "items": {"type": "string"}},
+                  "suggestions": {"type": "array", "items": {"type": "string"}},
+                  "recommendQuestions": {"type": "array", "items": {"type": "object"}},
+                  "qaDetails": {"type": "array", "items": {"type": "object"}}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "InterviewHistoryResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "total": {"type": "integer"},
+                  "page": {"type": "integer"},
+                  "size": {"type": "integer"},
+                  "records": {"type": "array", "items": {"type": "object"}}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UserProfileResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "positionId": {"type": "integer", "format": "int64"},
+                  "positionName": {"type": "string"},
+                  "totalInterviews": {"type": "integer"},
+                  "completedInterviews": {"type": "integer"},
+                  "avgScore": {"type": "number"},
+                  "highestScore": {"type": "number"},
+                  "skillScores": {"type": "object"},
+                  "weakSkills": {"type": "array", "items": {"type": "string"}},
+                  "strongSkills": {"type": "array", "items": {"type": "string"}},
+                  "lastInterviewTime": {"type": "string", "format": "date-time"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GrowthCurveResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "positionId": {"type": "integer", "format": "int64"},
+                  "dimension": {"type": "string"},
+                  "dataPoints": {"type": "array", "items": {"type": "object"}},
+                  "trend": {"type": "string"},
+                  "improvement": {"type": "number"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CreateQuestionRequest": {
+        "type": "object",
+        "required": ["positionId", "category", "difficulty", "title", "content"],
+        "properties": {
+          "positionId": {"type": "integer", "format": "int64"},
+          "category": {"type": "string", "enum": ["tech", "project", "scene", "behavior"]},
+          "difficulty": {"type": "integer"},
+          "title": {"type": "string"},
+          "content": {"type": "string"},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "keyPoints": {"type": "array", "items": {"type": "object"}},
+          "referenceAnswer": {"type": "string"},
+          "durationSeconds": {"type": "integer"}
+        }
+      },
+      "VoiceUploadResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "voiceUrl": {"type": "string"},
+                  "duration": {"type": "integer"}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "VoiceRecognizeRequest": {
+        "type": "object",
+        "required": ["voiceUrl"],
+        "properties": {
+          "voiceUrl": {"type": "string"}
+        }
+      },
+      "VoiceRecognizeResponse": {
+        "allOf": [
+          {"$ref": "#/components/schemas/ApiResponse"},
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "text": {"type": "string"},
+                  "confidence": {"type": "number"}
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
