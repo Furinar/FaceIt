@@ -1,0 +1,3 @@
+[submodule "ragent"]
+	path = ragent
+	url = git@github.com:nageoffer/ragent.git
